@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section style="padding-top: 100px; position: relative; z-index: 2;">
+    <h1 style="text-align: center; color: white; margin-bottom: 2rem;">Linha do Tempo</h1>
+    
+    <div class="timeline">
+        {% for data in datas|sort(attribute='data') %}
+        <div class="timeline-item">
+            <h3 style="color: white; margin-bottom: 0.5rem;">{{ data.titulo }}</h3>
+            <p style="color: rgba(255,255,255,0.8);">
+                <i class="fas fa-calendar-alt"></i> {{ data.data }}
+            </p>
+        </div>
+        {% else %}
+        <div class="glass-card" style="text-align: center;">
+            <p>Nenhuma data adicionada ainda.</p>
+            <p>Acesse o <a href="/admin/login" style="color: white;">painel admin</a> para adicionar datas importantes.</p>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+<style>
+    section {
+        min-height: 100vh;
+    }
+    
+    h1 {
+        font-size: 2.5rem;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    }
+    
+    @media (max-width: 768px) {
+        h1 {
+            font-size: 1.8rem;
+        }
+    }
+</style>
+{% endblock %}

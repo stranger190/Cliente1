@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>{{ config.get('titulo_site', 'Meu Amor') }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: {{ config.get('cor_primaria', '#6c5ce7') }};
+            --secondary-color: {{ config.get('cor_secundaria', '#a8a5e8') }};
+        }
+    </style>
+</head>
+<body>
+    <canvas id="particles-canvas"></canvas>
+    
+    <nav class="glass-nav">
+        <div class="nav-container">
+            <div class="logo">
+                <i class="fas fa-heart"></i>
+                <span>{{ config.get('titulo_site', 'Meu Amor') }}</span>
+            </div>
+            <div class="menu-toggle">
+                <i class="fas fa-bars"></i>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="/"><i class="fas fa-home"></i> Início</a></li>
+                <li><a href="/galeria"><i class="fas fa-images"></i> Galeria</a></li>
+                <li><a href="/cartas"><i class="fas fa-envelope"></i> Cartas</a></li>
+                <li><a href="/timeline"><i class="fas fa-clock"></i> Linha do Tempo</a></li>
+                <li><a href="/contador"><i class="fas fa-calendar"></i> Contador</a></li>
+                <li><a href="/mensagens"><i class="fas fa-comments"></i> Mensagens</a></li>
+                <li><a href="/surpresa"><i class="fas fa-gift"></i> Surpresa</a></li>
+                <li><a href="/admin/login"><i class="fas fa-cog"></i> Admin</a></li>
+            <li><a href="/musicas"><i class="fas fa-headphones"></i> Músicas</a></li>
+</ul>
+        </div>
+    </nav>
+
+    {% block content %}{% endblock %}
+
+    <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

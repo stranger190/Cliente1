@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section style="padding-top: 100px; position: relative; z-index: 2;">
+    <h1 style="text-align: center; color: white; margin-bottom: 2rem;">
+        <i class="fas fa-headphones"></i> Músicas
+    </h1>
+    
+    <div class="cards-container">
+        {% for musica in musicas %}
+        <div class="musica-item" data-caminho="{{ musica.caminho }}" data-titulo="{{ musica.titulo }}">
+            <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
+                <div>
+                    <h3 style="color: white; margin-bottom: 0.5rem;">
+                        <i class="fas fa-music"></i> {{ musica.titulo or 'Sem título' }}
+                    </h3>
+                    <small style="color: rgba(255,255,255,0.6);">
+                        Adicionada em: {{ musica.data }}
+                    </small>
+                </div>
+                <button class="btn-play" style="background: var(--primary-color); border: none; padding: 10px 20px; border-radius: 50px; cursor: pointer;">
+                    <i class="fas fa-play"></i> Ouvir
+                </button>
+            </div>
+        </div>
+        {% else %}
+        <div class="glass-card" style="text-align: center;">
+            <p>Nenhuma música adicionada ainda.</p>
+            <p>Acesse o <a href="/admin/login" style="color: white;">painel admin</a> para adicionar músicas.</p>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+<style>
+    section {
+        min-height: 100vh;
+    }
+    
+    h1 {
+        font-size: 2.5rem;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    }
+    
+    .musica-item {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        transition: all 0.3s ease;
+    }
+    
+    .musica-item:hover {
+        transform: translateX(5px);
+        background: rgba(255, 255, 255, 0.15);
+    }
+    
+    .btn-play:hover {
+        transform: scale(1.05);
+    }
+    
+    @media (max-width: 768px) {
+        h1 {
+            font-size: 1.8rem;
+        }
+        
+        .musica-item {
+            padding: 1rem;
+        }
+        
+        .btn-play {
+            padding: 8px 15px;
+            font-size: 0.9rem;
+        }
+    }
+</style>
+{% endblock %}

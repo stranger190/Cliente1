@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="hero">
+    <div class="glass-card">
+        <h1>Bem-vindo</h1>
+        <p>Este site foi criado especialmente para você</p>
+        <a href="/galeria" class="btn">Explorar <i class="fas fa-arrow-right"></i></a>
+    </div>
+</section>
+
+<style>
+    .hero {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        z-index: 2;
+        padding: 2rem;
+    }
+    
+    .glass-card {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(20px);
+        border-radius: 30px;
+        padding: 3rem;
+        text-align: center;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        animation: fadeInUp 0.8s ease;
+        max-width: 600px;
+    }
+    
+    .glass-card h1 {
+        font-size: 3rem;
+        color: white;
+        margin-bottom: 1rem;
+    }
+    
+    .glass-card p {
+        font-size: 1.2rem;
+        color: rgba(255, 255, 255, 0.9);
+        margin-bottom: 2rem;
+    }
+    
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .glass-card h1 {
+            font-size: 2rem;
+        }
+        
+        .glass-card {
+            padding: 2rem;
+        }
+    }
+</style>
+{% endblock %}

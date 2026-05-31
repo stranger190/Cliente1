@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="contador-container">
+    <div class="contador-card">
+        <h2 style="color: white; margin-bottom: 1rem;">
+            <i class="fas fa-heart"></i> Tempo Juntos
+        </h2>
+        
+        {% if dados_rel and dados_rel.data_inicio %}
+        <div id="contador-wrapper">
+            <div class="contador-numero" id="dias">0</div>
+            <p style="color: rgba(255,255,255,0.8); margin-bottom: 2rem;">dias</p>
+            
+            <div style="display: flex; gap: 2rem; justify-content: center; flex-wrap: wrap;">
+                <div>
+                    <div class="contador-numero" id="horas" style="font-size: 2rem;">0</div>
+                    <p style="color: rgba(255,255,255,0.8);">horas</p>
+                </div>
+                <div>
+                    <div class="contador-numero" id="minutos" style="font-size: 2rem;">0</div>
+                    <p style="color: rgba(255,255,255,0.8);">minutos</p>
+                </div>
+                <div>
+                    <div class="contador-numero" id="segundos" style="font-size: 2rem;">0</div>
+                    <p style="color: rgba(255,255,255,0.8);">segundos</p>
+                </div>
+            </div>
+        </div>
+        
+        <script>
+            const dataInicio = new Date('{{ dados_rel.data_inicio }}');
+            
+            function atualizarContador() {
+                const agora = new Date();
+                const diff = agora - dataInicio;
+                
+                const dias = Math.floor(diff / (1000 * 60 * 60 * 24));
+                const horas = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutos = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                const segundos = Math.floor((diff % (1000 * 60)) / 1000);
+                
+                document.getElementById('dias').textContent = dias;
+                document.getElementById('horas').textContent = horas;
+                document.getElementById('minutos').textContent = minutos;
+                document.getElementById('segundos').textContent = segundos;
+            }
+            
+            atualizarContador();
+            setInterval(atualizarContador, 1000);
+        </script>
+        {% else %}
+        <p style="color: rgba(255,255,255,0.8);">Adicione uma data no painel admin para começar o contador.</p>
+        <a href="/admin/login" class="btn" style="margin-top: 1rem; display: inline-block;">Ir para Admin</a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

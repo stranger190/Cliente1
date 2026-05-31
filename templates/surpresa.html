@@ -1,0 +1,382 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    .surpresa-container {
+        min-height: 100vh;
+        padding: 100px 2rem 2rem;
+        position: relative;
+        z-index: 2;
+    }
+    .surpresa-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        gap: 2rem;
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+    .surpresa-card {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        border-radius: 25px;
+        padding: 1.5rem;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        transition: transform 0.3s ease;
+    }
+    .surpresa-card:hover {
+        transform: translateY(-5px);
+    }
+    .card-title {
+        font-size: 1.5rem;
+        color: white;
+        margin-bottom: 1rem;
+        border-left: 4px solid var(--primary-color);
+        padding-left: 0.8rem;
+    }
+    .counter-number {
+        font-size: 2.5rem;
+        font-weight: bold;
+        color: white;
+        text-align: center;
+        margin: 0.5rem 0;
+    }
+    .locked-box {
+        background: rgba(0,0,0,0.5);
+        border-radius: 15px;
+        padding: 1rem;
+        text-align: center;
+        cursor: pointer;
+    }
+    .game-word {
+        font-size: 1.8rem;
+        letter-spacing: 5px;
+        font-weight: bold;
+        text-align: center;
+        color: white;
+        margin: 1rem 0;
+    }
+    .album-photo {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+        border-radius: 15px;
+        margin-bottom: 0.5rem;
+    }
+    .envelope {
+        background: rgba(255,255,255,0.2);
+        border-radius: 15px;
+        padding: 1rem;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+    .envelope:hover {
+        background: rgba(255,255,255,0.3);
+    }
+    .playlist-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.8rem;
+        border-bottom: 1px solid rgba(255,255,255,0.2);
+    }
+    .btn-small {
+        background: var(--primary-color);
+        border: none;
+        padding: 5px 12px;
+        border-radius: 20px;
+        color: white;
+        cursor: pointer;
+    }
+    .hidden-message {
+        display: none;
+        margin-top: 1rem;
+        padding: 1rem;
+        background: rgba(0,0,0,0.5);
+        border-radius: 12px;
+        color: white;
+    }
+    .bloqueio-container {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+        position: relative;
+        z-index: 2;
+    }
+    .bloqueio-card {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(20px);
+        border-radius: 30px;
+        padding: 3rem;
+        text-align: center;
+        max-width: 500px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    .contador-bloqueio {
+        font-size: 2rem;
+        font-weight: bold;
+        color: var(--primary-color);
+        margin: 1rem 0;
+    }
+</style>
+
+<script>
+    const CONFIG = {{ dados.configuracoes | tojson }};
+    
+    const diaDosNamorados = new Date(CONFIG.surpresa_data_contagem);
+    const hoje = new Date();
+    let liberado = hoje >= diaDosNamorados;
+    
+    function atualizarContagemBloqueio() {
+        const agora = new Date();
+        const diff = diaDosNamorados - agora;
+        if (diff <= 0) {
+            location.reload();
+            return;
+        }
+        const dias = Math.floor(diff / (1000*60*60*24));
+        const horas = Math.floor((diff % (86400000))/3600000);
+        const minutos = Math.floor((diff % 3600000)/60000);
+        const segundos = Math.floor((diff % 60000)/1000);
+        const contadorEl = document.getElementById('contador-bloqueio-numeros');
+        if (contadorEl) {
+            contadorEl.innerHTML = `${dias} dias, ${horas} horas, ${minutos} minutos e ${segundos} segundos`;
+        }
+    }
+</script>
+
+{% if not liberado %}
+<div class="bloqueio-container">
+    <div class="bloqueio-card">
+        <i class="fas fa-gift" style="font-size: 4rem; color: white; margin-bottom: 1rem;"></i>
+        <h2>🎁 Surpresa Bloqueada 🎁</h2>
+        <p>Esta página especial será liberada no <strong>Dia dos Namorados</strong>!</p>
+        <p>Volte em:</p>
+        <div class="contador-bloqueio" id="contador-bloqueio-numeros"></div>
+        <p style="margin-top: 1rem;">Prepare-se para uma surpresa especial! ❤️</p>
+    </div>
+</div>
+<script>
+    atualizarContagemBloqueio();
+    setInterval(atualizarContagemBloqueio, 1000);
+</script>
+{% else %}
+<div class="surpresa-container">
+    <h1 style="text-align: center; color: white; margin-bottom: 2rem;">{{ CONFIG.surpresa_titulo }}</h1>
+    <div class="surpresa-grid">
+
+        {% if CONFIG.surpresa_ativo_contagem %}
+        <div class="surpresa-card">
+            <div class="card-title"><i class="fas fa-hourglass-half"></i> Contagem Regressiva</div>
+            <div id="countdown" style="text-align: center;">
+                <div class="counter-number" id="dias-count">0</div>
+                <div>dias</div>
+                <div style="display: flex; justify-content: center; gap: 1rem; margin-top: 1rem;">
+                    <div><span id="horas-count">0</span>h</div>
+                    <div><span id="minutos-count">0</span>m</div>
+                    <div><span id="segundos-count">0</span>s</div>
+                </div>
+            </div>
+            <p style="color: rgba(255,255,255,0.7); text-align: center; margin-top: 1rem;">Para o próximo Dia dos Namorados</p>
+        </div>
+        {% endif %}
+
+        {% if CONFIG.surpresa_ativo_capsula %}
+        <div class="surpresa-card">
+            <div class="card-title"><i class="fas fa-clock"></i> Cápsula do Tempo</div>
+            <div id="capsula" class="locked-box">
+                <i class="fas fa-lock" style="font-size: 2rem; color: white;"></i>
+                <p style="color: white; margin-top: 0.5rem;">Destranca em {{ CONFIG.surpresa_data_capsula }}</p>
+                <div id="capsula-mensagem" style="display: none; color: white;">{{ CONFIG.surpresa_mensagem_capsula }}</div>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if CONFIG.surpresa_ativo_jogo %}
+        <div class="surpresa-card">
+            <div class="card-title"><i class="fas fa-puzzle-piece"></i> Palavra Secreta</div>
+            <div id="game-area">
+                <div class="game-word" id="palavra-embaralhada"></div>
+                <input type="text" id="palpite" placeholder="Digite a frase correta" style="width: 100%; padding: 8px; border-radius: 20px; border: none; margin: 10px 0;">
+                <button id="verificar-palpite" class="btn-small">Revelar</button>
+                <div id="resultado-jogo" style="margin-top: 10px; color: white;"></div>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if CONFIG.surpresa_ativo_album %}
+        <div class="surpresa-card">
+            <div class="card-title"><i class="fas fa-images"></i> Álbum Surpresa</div>
+            <div id="album-surpresa">
+                <img id="foto-aleatoria" class="album-photo" src="" alt="Foto surpresa">
+                <p id="legenda-foto" style="color: white; text-align: center;"></p>
+                <button id="proxima-foto" class="btn-small" style="width: 100%;">Próxima foto</button>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if CONFIG.surpresa_ativo_mural %}
+        <div class="surpresa-card">
+            <div class="card-title"><i class="fas fa-envelope"></i> Mural Secreto</div>
+            <div id="mural">
+                <div class="envelope" id="proximo-recado">
+                    <i class="fas fa-envelope-open-text" style="font-size: 2rem;"></i>
+                    <p>Clique para abrir um recado</p>
+                </div>
+                <div id="recado-atual" class="hidden-message"></div>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if CONFIG.surpresa_ativo_playlist %}
+        <div class="surpresa-card">
+            <div class="card-title"><i class="fas fa-headphones"></i> Playlist Surpresa</div>
+            <div id="playlist-surpresa">
+                <p style="color: white;">Músicas especialmente selecionadas:</p>
+                <div id="lista-musicas"></div>
+            </div>
+        </div>
+        {% endif %}
+
+    </div>
+</div>
+
+<script>
+    const CONFIG = {{ dados.configuracoes | tojson }};
+    
+    {% if CONFIG.surpresa_ativo_contagem %}
+    const targetDate = new Date(new Date().getFullYear() + 1, 5, 12);
+    function atualizarCountdown() {
+        const now = new Date();
+        const diff = targetDate - now;
+        const dias = Math.floor(diff / (1000*60*60*24));
+        const horas = Math.floor((diff % (86400000))/3600000);
+        const minutos = Math.floor((diff % 3600000)/60000);
+        const segundos = Math.floor((diff % 60000)/1000);
+        document.getElementById('dias-count').innerText = dias;
+        document.getElementById('horas-count').innerText = horas;
+        document.getElementById('minutos-count').innerText = minutos;
+        document.getElementById('segundos-count').innerText = segundos;
+    }
+    setInterval(atualizarCountdown, 1000);
+    atualizarCountdown();
+    {% endif %}
+
+    {% if CONFIG.surpresa_ativo_capsula %}
+    const dataCapsula = new Date(CONFIG.surpresa_data_capsula);
+    const capsulaDiv = document.getElementById('capsula');
+    const capsulaMsg = document.getElementById('capsula-mensagem');
+    function verificarCapsula() {
+        if (new Date() >= dataCapsula) {
+            capsulaDiv.innerHTML = '<i class="fas fa-gift" style="font-size: 2rem;"></i><p style="color:white;">Cápsula aberta!</p>' + capsulaMsg.outerHTML;
+            capsulaMsg.style.display = 'block';
+        }
+    }
+    verificarCapsula();
+    {% endif %}
+
+    {% if CONFIG.surpresa_ativo_jogo %}
+    const fraseOriginal = "{{ CONFIG.surpresa_frase_jogo }}";
+    function embaralhar(palavra) {
+        let arr = palavra.split('');
+        for (let i = arr.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+        return arr.join('');
+    }
+    document.getElementById('palavra-embaralhada').innerText = embaralhar(fraseOriginal);
+    document.getElementById('verificar-palpite').onclick = () => {
+        const palpite = document.getElementById('palpite').value.trim().toUpperCase();
+        if (palpite === fraseOriginal) {
+            document.getElementById('resultado-jogo').innerHTML = '🎉 Correto! 🎉';
+        } else {
+            document.getElementById('resultado-jogo').innerText = '❌ Errado. Tente novamente!';
+        }
+    };
+    {% endif %}
+
+    {% if CONFIG.surpresa_ativo_album %}
+    let fotos = [];
+    let indiceFoto = 0;
+    fetch('/api/dados-surpresa')
+        .then(res => res.json())
+        .then(data => {
+            fotos = data.fotos;
+            if (fotos.length > 0) {
+                indiceFoto = Math.floor(Math.random() * fotos.length);
+                atualizarFoto();
+            } else {
+                document.getElementById('album-surpresa').innerHTML = '<p style="color:white;">Adicione fotos no admin.</p>';
+            }
+        });
+    function atualizarFoto() {
+        if (fotos.length === 0) return;
+        const foto = fotos[indiceFoto];
+        let caminho = foto.caminho;
+        if (caminho.includes('static/')) caminho = '/' + caminho;
+        document.getElementById('foto-aleatoria').src = caminho;
+        document.getElementById('legenda-foto').innerText = foto.legenda || 'Momento especial';
+    }
+    document.getElementById('proxima-foto')?.addEventListener('click', () => {
+        if (fotos.length === 0) return;
+        indiceFoto = (indiceFoto + 1) % fotos.length;
+        atualizarFoto();
+    });
+    {% endif %}
+
+    {% if CONFIG.surpresa_ativo_mural %}
+    let mensagens = [];
+    let indiceMsg = 0;
+    fetch('/api/dados-surpresa')
+        .then(res => res.json())
+        .then(data => {
+            mensagens = data.mensagens;
+        });
+    document.getElementById('proximo-recado')?.addEventListener('click', () => {
+        if (mensagens.length === 0) {
+            document.getElementById('recado-atual').innerHTML = 'Nenhum recado cadastrado.';
+            document.getElementById('recado-atual').style.display = 'block';
+            return;
+        }
+        const msg = mensagens[indiceMsg % mensagens.length];
+        document.getElementById('recado-atual').innerHTML = `<i class="fas fa-heart"></i> ${msg.texto}<br><small>${msg.data}</small>`;
+        document.getElementById('recado-atual').style.display = 'block';
+        indiceMsg++;
+    });
+    {% endif %}
+
+    {% if CONFIG.surpresa_ativo_playlist %}
+    let musicas = [];
+    fetch('/api/dados-surpresa')
+        .then(res => res.json())
+        .then(data => {
+            musicas = data.musicas;
+            const container = document.getElementById('lista-musicas');
+            if (musicas.length === 0) {
+                container.innerHTML = '<p style="color:white;">Nenhuma música adicionada.</p>';
+                return;
+            }
+            musicas.forEach(m => {
+                const div = document.createElement('div');
+                div.className = 'playlist-item';
+                div.innerHTML = `
+                    <span style="color:white;">🎵 ${m.titulo || 'Sem título'}</span>
+                    <button class="btn-small" data-caminho="${m.caminho}" data-titulo="${m.titulo}">Ouvir</button>
+                `;
+                container.appendChild(div);
+            });
+            document.querySelectorAll('#lista-musicas .btn-small').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    if (typeof tocarMusica === 'function') {
+                        tocarMusica(btn.dataset.caminho, btn.dataset.titulo);
+                    }
+                });
+            });
+        });
+    {% endif %}
+</script>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section style="padding-top: 100px; position: relative; z-index: 2;">
+    <h1 style="text-align: center; color: white; margin-bottom: 2rem;">Cartas</h1>
+    
+    <div class="cards-container">
+        {% for carta in cartas %}
+        <div class="carta-card">
+            <h3>{{ carta.titulo }}</h3>
+            <p>{{ carta.conteudo | replace('\n', '<br>') | safe }}</p>
+            <small style="color: rgba(255,255,255,0.6); display: block; margin-top: 1rem;">
+                {{ carta.data }}
+            </small>
+        </div>
+        {% else %}
+        <div class="glass-card" style="text-align: center;">
+            <p>Nenhuma carta adicionada ainda.</p>
+            <p>Acesse o <a href="/admin/login" style="color: white;">painel admin</a> para adicionar cartas.</p>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+<style>
+    section {
+        min-height: 100vh;
+    }
+    
+    h1 {
+        font-size: 2.5rem;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    }
+    
+    @media (max-width: 768px) {
+        h1 {
+            font-size: 1.8rem;
+        }
+    }
+</style>
+{% endblock %}

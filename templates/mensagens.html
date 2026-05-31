@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section style="padding-top: 100px; position: relative; z-index: 2;">
+    <h1 style="text-align: center; color: white; margin-bottom: 2rem;">Mensagens</h1>
+    
+    <div class="mensagens-container">
+        {% for msg in mensagens|reverse %}
+        <div class="mensagem-item">
+            <p style="color: white; font-size: 1.1rem;">{{ msg.texto }}</p>
+            <small style="color: rgba(255,255,255,0.6); display: block; margin-top: 0.5rem;">
+                <i class="fas fa-clock"></i> {{ msg.data }}
+            </small>
+        </div>
+        {% else %}
+        <div class="glass-card" style="text-align: center;">
+            <p>Nenhuma mensagem adicionada ainda.</p>
+            <p>Acesse o <a href="/admin/login" style="color: white;">painel admin</a> para adicionar mensagens.</p>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+<style>
+    section {
+        min-height: 100vh;
+    }
+    
+    h1 {
+        font-size: 2.5rem;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    }
+    
+    @media (max-width: 768px) {
+        h1 {
+            font-size: 1.8rem;
+        }
+    }
+</style>
+{% endblock %}

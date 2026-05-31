@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section style="padding-top: 100px; position: relative; z-index: 2;">
+    <h1 style="text-align: center; color: white; margin-bottom: 2rem;">Galeria de Fotos</h1>
+    
+    <div class="gallery-grid">
+        {% for foto in fotos %}
+        <div class="gallery-item">
+            <img src="{{ url_for('static', filename=foto.caminho.split('static/')[1]) if 'static/' in foto.caminho else foto.caminho }}" alt="{{ foto.legenda }}">
+            {% if foto.legenda %}
+            <div class="gallery-caption">{{ foto.legenda }}</div>
+            {% endif %}
+        </div>
+        {% else %}
+        <div class="glass-card" style="grid-column: 1/-1; text-align: center;">
+            <p>Nenhuma foto adicionada ainda.</p>
+            <p>Acesse o <a href="/admin/login" style="color: white;">painel admin</a> para adicionar fotos.</p>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+<style>
+    section {
+        min-height: 100vh;
+    }
+    
+    h1 {
+        font-size: 2.5rem;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    }
+    
+    @media (max-width: 768px) {
+        h1 {
+            font-size: 1.8rem;
+        }
+    }
+</style>
+{% endblock %}

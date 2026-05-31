@@ -1,0 +1,231 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section style="padding-top: 100px; position: relative; z-index: 2; padding-bottom: 2rem;">
+    <div style="max-width: 1200px; margin: 0 auto; padding: 0 2rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 2rem;">
+            <h1 style="color: white;">Painel Admin</h1>
+            <a href="/admin/logout" class="btn" style="background: #ff4757;">Sair</a>
+        </div>
+        
+        <div class="dashboard-grid">
+            <!-- Adicionar Foto -->
+            <div class="dashboard-card">
+                <h3 style="color: white; margin-bottom: 1rem;"><i class="fas fa-image"></i> Adicionar Foto</h3>
+                <form id="form-foto" enctype="multipart/form-data">
+                    <input type="file" name="foto" accept="image/*" required style="margin-bottom: 10px;">
+                    <input type="text" name="legenda" placeholder="Legenda (opcional)">
+                    <button type="submit" class="btn">Enviar</button>
+                </form>
+                <div id="status-foto" style="margin-top: 10px;"></div>
+            </div>
+            
+            <!-- Adicionar Música -->
+            <div class="dashboard-card">
+                <h3 style="color: white; margin-bottom: 1rem;"><i class="fas fa-music"></i> Adicionar Música</h3>
+                <form id="form-musica" enctype="multipart/form-data">
+                    <input type="file" name="musica" accept="audio/*" required style="margin-bottom: 10px;">
+                    <input type="text" name="titulo" placeholder="Título da música">
+                    <button type="submit" class="btn">Enviar</button>
+                </form>
+                <div id="status-musica" style="margin-top: 10px;"></div>
+            </div>
+            
+            <!-- Adicionar Carta -->
+            <div class="dashboard-card">
+                <h3 style="color: white; margin-bottom: 1rem;"><i class="fas fa-envelope"></i> Adicionar Carta</h3>
+                <form id="form-carta">
+                    <input type="text" name="titulo" placeholder="Título" required>
+                    <textarea name="conteudo" rows="4" placeholder="Conteúdo da carta" required></textarea>
+                    <button type="submit" class="btn">Salvar</button>
+                </form>
+                <div id="status-carta" style="margin-top: 10px;"></div>
+            </div>
+            
+            <!-- Adicionar Mensagem -->
+            <div class="dashboard-card">
+                <h3 style="color: white; margin-bottom: 1rem;"><i class="fas fa-comment"></i> Adicionar Mensagem</h3>
+                <form id="form-mensagem">
+                    <textarea name="texto" rows="3" placeholder="Digite a mensagem" required></textarea>
+                    <button type="submit" class="btn">Salvar</button>
+                </form>
+                <div id="status-mensagem" style="margin-top: 10px;"></div>
+            </div>
+            
+            <!-- Adicionar Data -->
+            <div class="dashboard-card">
+                <h3 style="color: white; margin-bottom: 1rem;"><i class="fas fa-calendar-plus"></i> Adicionar Data</h3>
+                <form id="form-data">
+                    <input type="text" name="titulo" placeholder="Título (ex: Nos conhecemos)" required>
+                    <input type="date" name="data_evento" required>
+                    <button type="submit" class="btn">Salvar</button>
+                </form>
+                <div id="status-data" style="margin-top: 10px;"></div>
+            </div>
+            
+            <!-- Configurações -->
+            <div class="dashboard-card">
+                <h3 style="color: white; margin-bottom: 1rem;"><i class="fas fa-palette"></i> Configurações</h3>
+                <form id="form-config">
+                    <input type="text" name="titulo_site" placeholder="Título do site" value="{{ dados.configuracoes.titulo_site }}">
+                    <input type="color" name="cor_primaria" value="{{ dados.configuracoes.cor_primaria }}">
+                    <input type="color" name="cor_secundaria" value="{{ dados.configuracoes.cor_secundaria }}">
+                    <button type="submit" class="btn">Salvar Configurações</button>
+                </form>
+                <div id="status-config" style="margin-top: 10px;"></div>
+            </div>
+        </div>
+        
+        <!-- Listar Itens para Remover -->
+        <div style="margin-top: 3rem;">
+            <h2 style="color: white; margin-bottom: 1rem;">Gerenciar Itens</h2>
+            
+            <div style="display: grid; gap: 2rem;">
+                <!-- Fotos -->
+                <div class="dashboard-card">
+                    <h3 style="color: white;">Fotos ({{ dados.fotos|length }})</h3>
+                    {% for foto in dados.fotos %}
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.2);">
+                        <span style="color: white;">{{ foto.legenda or 'Sem legenda' }}</span>
+                        <button class="btn-remover" data-tipo="foto" data-id="{{ foto.id }}" style="background: #ff4757; padding: 5px 15px;">Remover</button>
+                    </div>
+                    {% endfor %}
+                </div>
+                
+                <!-- Músicas -->
+                <div class="dashboard-card">
+                    <h3 style="color: white;">Músicas ({{ dados.musicas|length }})</h3>
+                    {% for musica in dados.musicas %}
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.2);">
+                        <span style="color: white;">{{ musica.titulo or 'Sem título' }}</span>
+                        <button class="btn-remover" data-tipo="musica" data-id="{{ musica.id }}" style="background: #ff4757; padding: 5px 15px;">Remover</button>
+                    </div>
+                    {% endfor %}
+                </div>
+                
+                <!-- Cartas -->
+                <div class="dashboard-card">
+                    <h3 style="color: white;">Cartas ({{ dados.cartas|length }})</h3>
+                    {% for carta in dados.cartas %}
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.2);">
+                        <span style="color: white;">{{ carta.titulo }}</span>
+                        <button class="btn-remover" data-tipo="carta" data-id="{{ carta.id }}" style="background: #ff4757; padding: 5px 15px;">Remover</button>
+                    </div>
+                    {% endfor %}
+                </div>
+                
+                <!-- Mensagens -->
+                <div class="dashboard-card">
+                    <h3 style="color: white;">Mensagens ({{ dados.mensagens|length }})</h3>
+                    {% for msg in dados.mensagens %}
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.2);">
+                        <span style="color: white;">{{ msg.texto[:50] }}{% if msg.texto|length > 50 %}...{% endif %}</span>
+                        <button class="btn-remover" data-tipo="mensagem" data-id="{{ msg.id }}" style="background: #ff4757; padding: 5px 15px;">Remover</button>
+                    </div>
+                    {% endfor %}
+                </div>
+                
+                <!-- Datas -->
+                <div class="dashboard-card">
+                    <h3 style="color: white;">Datas ({{ dados.datas|length }})</h3>
+                    {% for data in dados.datas %}
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.2);">
+                        <span style="color: white;">{{ data.titulo }} - {{ data.data }}</span>
+                        <button class="btn-remover" data-tipo="data" data-id="{{ data.id }}" style="background: #ff4757; padding: 5px 15px;">Remover</button>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    function enviarForm(url, formData, statusId) {
+        fetch(url, {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            const statusDiv = document.getElementById(statusId);
+            if (data.sucesso) {
+                statusDiv.innerHTML = '<span style="color: #00ff88;">✓ Sucesso! Recarregando...</span>';
+                setTimeout(() => location.reload(), 1000);
+            } else {
+                statusDiv.innerHTML = '<span style="color: #ff4757;">✗ Erro: ' + (data.erro || 'Desconhecido') + '</span>';
+            }
+        })
+        .catch(error => {
+            document.getElementById(statusId).innerHTML = '<span style="color: #ff4757;">✗ Erro ao enviar</span>';
+        });
+    }
+    
+    document.getElementById('form-foto').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        enviarForm('/admin/adicionar_foto', formData, 'status-foto');
+    });
+    
+    document.getElementById('form-musica').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        enviarForm('/admin/adicionar_musica', formData, 'status-musica');
+    });
+    
+    document.getElementById('form-carta').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        enviarForm('/admin/adicionar_carta', formData, 'status-carta');
+    });
+    
+    document.getElementById('form-mensagem').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        enviarForm('/admin/adicionar_mensagem', formData, 'status-mensagem');
+    });
+    
+    document.getElementById('form-data').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        enviarForm('/admin/adicionar_data', formData, 'status-data');
+    });
+    
+    document.getElementById('form-config').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        enviarForm('/admin/configuracoes', formData, 'status-config');
+    });
+    
+    document.querySelectorAll('.btn-remover').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const tipo = btn.dataset.tipo;
+            const id = btn.dataset.id;
+            if (confirm('Tem certeza que deseja remover este item?')) {
+                fetch(`/admin/remover_item/${tipo}/${id}`, { method: 'DELETE' })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.sucesso) location.reload();
+                    else alert('Erro ao remover');
+                });
+            }
+        });
+    });
+</script>
+
+<style>
+    .dashboard-card input, .dashboard-card textarea {
+        width: 100%;
+        padding: 10px;
+        margin: 8px 0;
+        border: none;
+        border-radius: 8px;
+        font-family: 'Inter', sans-serif;
+    }
+    
+    .dashboard-card input[type="color"] {
+        height: 50px;
+        cursor: pointer;
+    }
+</style>
+{% endblock %}
